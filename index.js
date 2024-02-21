@@ -31,7 +31,8 @@ async function run() {
 
      const userCollection= client.db("jerseyFreakDB").collection("users")
      const productCollection = client.db("jerseyFreakDB").collection("products")
-    app.post('/users',async(req,res)=>{
+     const cartCollection = client.db("jerseyFreakDB").collection("carts")
+     app.post('/users',async(req,res)=>{
       const user= req.body;
       const query={email:user.email}
       const existingUser= await userCollection.findOne(query)
@@ -101,10 +102,27 @@ async function run() {
  })
 
 
+ app.post('/carts',async(req,res)=>{
+  const cart = req.body
+  const result= await cartCollection.insertOne(cart)
+  res.send(result)
+})
 
 
+app.get('/carts', async (req, res) => {
+  try {
+    const email = req.query.email;
+    const query = { email:email };
+    
+    // Assuming cartCollection is a MongoDB collection
+    const result = await cartCollection.find(query).sort({ createdAt: -1 }).toArray();
 
-
+    res.send(result);
+  } catch (error) {
+    console.error("Error fetching and sorting carts:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 
     
