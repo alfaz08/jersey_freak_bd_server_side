@@ -30,7 +30,7 @@ async function run() {
      //database collection
 
      const userCollection= client.db("jerseyFreakDB").collection("users")
-
+     const productCollection = client.db("jerseyFreakDB").collection("products")
     app.post('/users',async(req,res)=>{
       const user= req.body;
       const query={email:user.email}
@@ -39,6 +39,12 @@ async function run() {
         return res.send({message:'user already exist',insertedId:null})
       }
       const result= await userCollection.insertOne(user)
+      res.send(result)
+    })
+
+    app.post('/products',async(req,res)=>{
+      const product = req.body
+      const result= await productCollection.insertOne(product)
       res.send(result)
     })
 
