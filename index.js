@@ -10,7 +10,7 @@ app.use(express.json())
 console.log(process.env.DB_USER);
 console.log(process.env.DB_PASS);
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.fpdogwm.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -48,8 +48,57 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/products/category',async(req,res)=>{
+      const productBrand= req.query.category
+      console.log(productBrand);
+      const query={productBrand: productBrand}
+      const result = await productCollection.find(query).toArray()
+      res.send(result)
+    })
+
+     //single product get from database
+   app.get('/singleProduct/:id',async(req,res)=>{
+  const id = req.params.id
+  const query= {_id: new ObjectId(id)}
+  const result =await productCollection.findOne(query)
+  res.send(result)
+})
 
 
+ app.patch('/updateProduct/:id',async(req,res)=>{
+  try{
+    const id= req.params.id
+    const query = {_id: new ObjectId(id)}
+
+    const dataToUpdate ={
+      productName: req.body.productName,
+      
+      productionPrice: req.body.productionPrice,
+ 
+    
+      productPrice:req.body.productPrice ,
+       
+      productDetails: req.body.productDetails,
+    
+      productDetails: req.body.productDetails,
+      productRating: req.body.productRating,
+      productType: req.body.productType,
+      email: req.body.email,
+    }
+
+    const updateDoc = {
+      $set: dataToUpdate,
+    };
+
+    const result = await productCollection.updateOne(query, updateDoc);
+  
+    res.send(result);
+
+  }catch(error){
+    console.error('Error updating badge:', error);
+    res.status(500).send('Internal Server Error');
+  }
+ })
 
 
 
