@@ -124,6 +124,10 @@ app.get('/carts', async (req, res) => {
   }
 });
 
+app.get('/products',async(req,res)=>{
+  const result =await productCollection.find().sort({ createdAt: -1 }).toArray()
+  res.send(result)
+})
 
     
     // Send a ping to confirm a successful connection
